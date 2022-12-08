@@ -6,70 +6,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 
-typedef struct topThree
-{
-    int one;
-    int two;
-    int Three;
-}topThree_t;
-
-
-int getOneElfsCalories(FILE *input, bool *keepReading)
-{
-    char line[100];
-    int calories = 0;
-    
-    do
-    {
-        if (fgets(line, sizeof(line), input) == NULL)
-        {
-            *keepReading = false;
-            return calories;
-        }
-
-        calories += atoi(line);
-
-    } while (line[0] != '\n');
-
-    return calories;
-}
-
-topThree_t initTopThree(FILE *input)
-{
-    topThree_t topThree;
-
-    topThree.one = getOneElfsCalories(input, NULL);
-
-    int calories = getOneElfsCalories(input, NULL);
-    if (calories > topThree.one)
-    {
-        topThree.two = topThree.one;
-        topThree.one = calories;
-    }
-    else
-    {
-        topThree.two = calories;
-    }
-
-    calories = getOneElfsCalories(input, NULL);
-    if (calories > topThree.one)
-    {
-        topThree.Three = topThree.two;
-        topThree.two = topThree.one;
-        topThree.one = calories;
-    }
-    else if (calories > topThree.two)
-    {
-        topThree.Three = topThree.two;
-        topThree.two = calories;
-    }
-    else
-    {
-        topThree.Three = calories;
-    }
-    
-    return topThree;
-}
+#define BUFF_SIZE 256
 
 int main(int argc, char *argv[])
 {
@@ -79,32 +16,45 @@ int main(int argc, char *argv[])
         perror("Error");
         return EXIT_FAILURE;
     }
-    
 
-    topThree_t topThree = initTopThree(input);
+    int output;
 
-    bool keepReading = true;
-    while (keepReading)
+    int current = 0;
+    int highest = 0;
+    int secondHighest = 0;
+    int thirdHighest = 0;
+
+    char line[BUFF_SIZE];
+    while (fgets(line, sizeof(line), input) != NULL)
     {
-        int calories = getOneElfsCalories(input, &keepReading);
-        if (calories > topThree.one)
+        if (line[0] != '\n')
         {
-            topThree.Three = topThree.two;
-            topThree.two = topThree.one;
-            topThree.one = calories; 
+            current += strtol(line, NULL, 10);
+            continue;
         }
-        else if (calories > topThree.two)
+        
+        if (current > highest)
         {
-            topThree.Three = topThree.two;
-            topThree.two = calories;
+            thirdHighest = secondHighest;
+            secondHighest = highest;
+            highest = current; 
         }
-        else if (calories > topThree.Three)
+        else if (current > secondHighest)
         {
-            topThree.Three = calories;
+            thirdHighest = secondHighest;
+            secondHighest = current;
         }
+        else if (current > thirdHighest)
+        {
+            thirdHighest = current;
+        }
+
+        current = 0;
     }
-    
-    int output = topThree.one + topThree.two + topThree.Three;
+
+    output = highest + secondHighest + thirdHighest;
     printf("%d\n", output);
+
+    fclose(input);
     return EXIT_SUCCESS;
 }

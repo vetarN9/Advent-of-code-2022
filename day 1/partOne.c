@@ -1,30 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <ctype.h>
 
-int getOneElfsCalories(FILE *input, bool *keepReading)
-{
-    char line[100];
-    int calories = 0;
-    
-    do
-    {
-        if (fgets(line, sizeof(line), input) == NULL)
-        {
-            *keepReading = false;
-            return calories;
-        }
-
-        calories += atoi(line);
-        
-    } while (line[0] != '\n');
-
-    return calories;
-}
+#define BUFF_SIZE 256
 
 int main(int argc, char *argv[])
 {
@@ -34,19 +11,30 @@ int main(int argc, char *argv[])
         perror("Error");
         return EXIT_FAILURE;
     }
-    
-    int maxCalories = 0;
 
-    bool keepReading = true;
-    while (keepReading)
+    int output = 0;
+    int current = 0;
+
+    char line[BUFF_SIZE];
+    while (fgets(line, sizeof(line), input) != NULL)
     {
-        int calories = getOneElfsCalories(input, &keepReading);
-        if (calories > maxCalories)
+        if (line[0] != '\n')
         {
-            maxCalories = calories;
+            current += strtol(line, NULL, 10);
+        }
+        else
+        {
+            if (current > output)
+            {
+                output = current;
+            }
+
+            current = 0;
         }
     }
-    
-    printf("%d\n", maxCalories);
+
+    printf("%d\n", output);
+
+    fclose(input);
     return EXIT_SUCCESS;
 }
