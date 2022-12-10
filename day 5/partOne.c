@@ -4,36 +4,37 @@
 #include <ctype.h>
 
 #define BUFF_SIZE 256
-#define WIDTH 9
-#define HEIGHT 100
 
 int main(int argc, char *argv[])
 {
     FILE *input = fopen("input.txt", "r");
 
-    int stacks[WIDTH][HEIGHT] = { }; // Represents the stacks of creates
-    int stackHeight[WIDTH] = { }; // Current height of eachs stack
-    int height = 7; // Highest starting create
-
     char line[BUFF_SIZE];
+    fgets(line, BUFF_SIZE, input);
+
+    int m = strlen(line)/4;
+    int n = 0;
+    while (line[1] != '1')
+    {
+        n++;
+        fgets(line, BUFF_SIZE, input);
+    }
+    rewind(input);
+
+    int stacks[m][m*n]; // Represents the stacks of creates
+    memset(stacks, 0, m*m*n*sizeof(int));
+
+    int stackHeight[m]; // Current height of eachs stack
+    memset(stackHeight, 0, m*sizeof(int));
+    
+    int height = n-1;
 
     // Read in the starting state
     while (height >= 0)
     {
         fgets(line, BUFF_SIZE, input);
 
-        char *pos;
-        while ((pos = strchr(line, '[')) != NULL)
-        {
-            line[pos-line] = ' ';
-        }
-
-        while ((pos = strchr(line, ']')) != NULL)
-        {
-            line[pos-line] = ' ';
-        }
-
-        for (int i = 0; i < 9; i++)
+        for (int i = 0; i < m; i++)
         {
             int pos = 4*i + 1;
             if (line[pos] != ' ')
@@ -51,8 +52,10 @@ int main(int argc, char *argv[])
     }
 
     // Move to instructions
-    fgets(line, BUFF_SIZE, input);
-    fgets(line, BUFF_SIZE, input);
+    do
+    {
+        fgets(line, BUFF_SIZE, input);
+    } while (line[0] == ' ');
 
     char discard[BUFF_SIZE];
     int num;
@@ -77,11 +80,17 @@ int main(int argc, char *argv[])
         }
     }
     
-    char output[WIDTH+1];
-    for (int stack = 0; stack < WIDTH; stack++)
+    char output[m+1];
+    int pos = -1;
+    for (int stack = 0; stack < m; stack++)
     {
-        output[stack] = stacks[stack][stackHeight[stack]];
+        if (stackHeight[stack] != -1)
+        {
+            pos++;
+            output[pos] = stacks[stack][stackHeight[stack]];
+        }
     }
+    output[pos+1] = '\0';
     
     printf("%s\n", output);
 
