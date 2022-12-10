@@ -30,26 +30,27 @@ int main(int argc, char *argv[])
         if (line[0] != '\n')
         {
             current += strtol(line, NULL, 10);
-            continue;
         }
-        
-        if (current > highest)
+        else
         {
-            thirdHighest = secondHighest;
-            secondHighest = highest;
-            highest = current; 
-        }
-        else if (current > secondHighest)
-        {
-            thirdHighest = secondHighest;
-            secondHighest = current;
-        }
-        else if (current > thirdHighest)
-        {
-            thirdHighest = current;
-        }
+            if (current > highest)
+            {
+                thirdHighest = secondHighest;
+                secondHighest = highest;
+                highest = current; 
+            }
+            else if (current > secondHighest)
+            {
+                thirdHighest = secondHighest;
+                secondHighest = current;
+            }
+            else if (current > thirdHighest)
+            {
+                thirdHighest = current;
+            }
 
-        current = 0;
+            current = 0;
+        }
     }
 
     output = highest + secondHighest + thirdHighest;

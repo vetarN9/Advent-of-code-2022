@@ -6,11 +6,6 @@
 int main(int argc, char *argv[])
 {
     FILE *input = fopen("input.txt", "r");
-    if (input == NULL)
-    {
-        perror("Error");
-        return EXIT_FAILURE;
-    }
 
     int output = 0;
     int current = 0;
