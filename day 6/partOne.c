@@ -16,43 +16,36 @@ int main(int argc, char *argv[])
     char line[BUFF_SIZE];
     fgets(line, BUFF_SIZE, input);
     fclose(input);
-
-    char window[WINDOW_LENGTH];
-    for (int i = 0; i < WINDOW_LENGTH; i++)
-    {
-        window[i] = line[i];
-    }
     
     bool foundMsg;
 
-    for (int pos = (WINDOW_LENGTH - 1); pos < strlen(line); pos++)
+    for (int marker = WINDOW_LENGTH-1; marker < strlen(line);)
     {
         foundMsg = true;
 
         //compare each char in window
-        for (int i = 0; i < WINDOW_LENGTH; i++)
+        for (int i = marker-WINDOW_LENGTH+1; i < marker; i++)
         {   
-            for (int j = 0; j < WINDOW_LENGTH; j++)
+            for (int j = i+1; j <= marker; j++)
             {
-                if (window[i] == window[j] && i != j)
+                if (line[i] == line[j])
                 {
                     foundMsg = false;
+                    break;
                 }
-            } 
+            }
+            if (!foundMsg)
+            {
+                marker = i + WINDOW_LENGTH;
+                break;
+            }
         }
 
         if (foundMsg)
         {
-            output = pos+1;
+            output = marker+1;
             break;
         }
-        
-        // shift window
-        for (int i = 0; i < (WINDOW_LENGTH - 1); i++)
-        {
-            window[i] = window[i+1];
-        }
-        window[WINDOW_LENGTH-1] = line[pos+1];
     }
     
     printf("%d\n", output);
